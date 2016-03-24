@@ -1,0 +1,69 @@
+          model_index  3
+             rnn_size  50
+           num_layers  1
+                max_n  1
+                max_m  1
+            state_dim  4
+           batch_size  1
+            loss_type  1
+                  vel  0
+              fixed_n  1
+                kappa  1
+               lambda  1
+                   mu  0
+                   nu  1
+                   xi  1
+              omicron  1
+                 linp  0
+                 einp  1
+               dalink  1
+              detlink  1
+               
+            init_from  
+        training_file  
+           max_epochs  500000
+      mini_batch_size  10
+       synth_training  20
+          synth_valid  10
+             full_set  1
+
+        pert_training  0
+           save_plots  0
+            det_noise  0.01
+             det_fail  0.3
+            det_false  0.0
+             norm_std  -1
+            norm_mean  1
+        dummy_det_val  0
+         dummy_weight  1
+       reshuffle_dets  0
+           order_dets  0
+         use_gt_input  0
+	 use_da_input  1
+         random_epoch  0
+       freq_reshuffle  0
+       
+          print_every  100
+       eval_val_every  1000
+           plot_every  1000
+              dropout  0.02
+             temp_win  10
+           suppress_x  0
+              verbose  2
+           eval_mot15  0
+	    eval_conf  config/XPOS.ini
+	    
+             profiler  0
+            real_data  2
+            real_dets  0
+          trim_tracks  1
+            grad_clip  1
+            lrng_rate  .0005
+      lrng_rate_decay  0.95
+lrng_rate_decay_after  -1
+         rand_par_rng  .08
+          forget_bias  1
+           decay_rate  0.97
+                 seed  2
+               opencl  0
+                gpuid  -1
