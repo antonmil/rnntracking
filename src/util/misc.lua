@@ -167,13 +167,13 @@ function getData(fileName, mode)
   
   -- go through all lines
   for l = 1,tabLen(raw) do    
-    fr=raw[l][1]
-    id=raw[l][2]
-    bx=raw[l][3]
-    by=raw[l][4]
-    bw=raw[l][5]
-    bh=raw[l][6]
-    sc=raw[l][7]
+    local fr=raw[l][1]
+    local id=raw[l][2]
+    local bx=raw[l][3]
+    local by=raw[l][4]
+    local bw=raw[l][5]
+    local bh=raw[l][6]
+    local sc=raw[l][7]
     if data[fr] == nil then
       data[fr] = {}      
     end
@@ -2222,4 +2222,19 @@ function getPWDHUN(pwdMode, nClasses, pwdDim, tracks, detections, missThr, dummy
   end    
   
   return allDistBatches
+end
+
+--------------------------------------------------------------------------
+--- Make directory if does not yet exist
+-- @param dir   path to dir to create
+function mkdirP(dir)
+  if not lfs.attributes(dir) then lfs.mkdir(dir) end
+end
+
+function createAuxDirs()
+  mkdirP('./bin')
+  mkdirP('./tmp')
+  mkdirP('./out')
+  mkdirP('./config')
+  mkdirP('./graph')
 end

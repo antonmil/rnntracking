@@ -10,14 +10,8 @@
               fixed_n  1
                 kappa  1
                lambda  1
-                   mu  0
                    nu  1
                    xi  1
-              omicron  1
-                 linp  0
-                 einp  1
-               dalink  1
-              detlink  1
                
             init_from  
         training_file  
@@ -39,7 +33,7 @@
        reshuffle_dets  0
            order_dets  0
          use_gt_input  0
-	 use_da_input  1
+         use_da_input  1
          random_epoch  0
        freq_reshuffle  0
        
@@ -51,10 +45,10 @@
            suppress_x  0
               verbose  2
            eval_mot15  0
-	    eval_conf  config/XPOS.ini
+            eval_conf  config/XPOS.ini
 	    
              profiler  0
-            real_data  2
+            real_data  0
             real_dets  0
           trim_tracks  1
             grad_clip  1

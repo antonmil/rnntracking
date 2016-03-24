@@ -20,7 +20,8 @@ end
 
 --------------------------------------------------------------------------
 --- Model-specific options in a line
-function printModelOptions(opt, modelParams)
+function printModelOptions(opt)
+  local modelParams = opt.modelParams
   local header = ''
   local params = ''
   for k,v in pairs(modelParams) do 
