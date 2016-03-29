@@ -109,10 +109,6 @@ We thank Andrej Karpathy for releasing his
 [code](https://github.com/karpathy/char-rnn) on character-level
 RNNs that served as basis for this project.
 
-Furthermore, we would like to encourage other researchers
-and practitioners to further develop and extend our framework
-to achieve better results. We appreciate proposals for collaboration.
-
 **Pull requests welcome.**
 
 

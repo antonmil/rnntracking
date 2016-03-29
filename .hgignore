@@ -1,0 +1,15 @@
+syntax: glob
+bin/*
+dump/*
+docs/*
+out/*
+tmp/*
+data/*
+matlab/vis/*
+matlab/parsearch/*
+matlab/data/*.avi
+logs/*
+config/*
+src/nngraph_*
+*.dot
+*.svg

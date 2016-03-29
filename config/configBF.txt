@@ -3,7 +3,7 @@
            num_layers  1
                 max_n  1
                 max_m  1
-            state_dim  4
+            state_dim  1
            batch_size  1
             loss_type  1
                   vel  0
@@ -15,7 +15,7 @@
                
             init_from  
         training_file  
-           max_epochs  500000
+           max_epochs  50000
       mini_batch_size  10
        synth_training  20
           synth_valid  10
@@ -37,9 +37,9 @@
          random_epoch  0
        freq_reshuffle  0
        
-          print_every  100
-       eval_val_every  1000
-           plot_every  1000
+          print_every  10
+       eval_val_every  100
+           plot_every  100
               dropout  0.02
              temp_win  10
            suppress_x  0

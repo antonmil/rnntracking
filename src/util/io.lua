@@ -145,7 +145,7 @@ function getCheckptFilename(base, opt, modelParams)
   local tL = tabLen(modelParams)	-- how many relevant parameters
   
   local ext = '.t7'			-- file extension
-  local dir = 'bin/'			-- directory  
+  local dir = getRNNTrackerRoot()..'bin/'			-- directory  
   local signature = ''
   
   for i=1,tL do
@@ -183,7 +183,7 @@ function getTrainingDataFilename(opt, dataParams, mode)
   local tL = tabLen(dataParams)	-- how many relevant parameters
   
   local ext = '.t7'			-- file extension
-  local dir = 'tmp/'			-- directory  
+  local dir = getRNNTrackerRoot()..'tmp/'			-- directory  
   local signature = ''
   
   for i=1,tL do
@@ -220,7 +220,7 @@ end
 --------------------------------------------------------------------------
 --- Save checkpoint (convert to CPU first)
 function saveCheckpoint(savefile, tracks, detections, protos, opt, trainLosses, time, it)  
-  savefile = savefile or string.format('bin/model.t7')
+  savefile = savefile or string.format('%sbin/model.t7',getRNNTrackerRoot())
   print('saving model to ' .. savefile)
   local checkpoint = {}
   -- checkpoint.detections = detections:float()

@@ -105,6 +105,7 @@ cmd:option('-suppress_x',0,'suppress plotting in terminal')
 cmd:option('-eval_mot15',1,'evaluate MOT15 with matlab')
 cmd:option('-eval_conf','','evaluation config file')
 cmd:option('-da_model','0305DA','model name for Data Association')
+cmd:option('-colored_output',0,'do color highlighting in the output')
 -- GPU/CPU
 cmd:option('-gpuid',-1,'which gpu to use. -1 = use CPU')
 cmd:option('-opencl',0,'use OpenCL (instead of CUDA)')
@@ -197,10 +198,14 @@ modelName = 'default'   -- base name
 if string.len(opt.config)>0 then local fp,fn,fe = fileparts(opt.config); modelName = fn end
 
 -- a list of model-specific parameters... These cannot change across models
+opt.modelName = modelName
 opt.modelParams = {'model_index', 'rnn_size', 'num_layers','max_n','max_m','state_dim'}
 opt.dataParams = {'synth_training','synth_valid','mini_batch_size',
   'max_n','max_m','state_dim','full_set','fixed_n',
   'temp_win','real_data','real_dets','trim_tracks'}
+-- TODO remove these globals
+modelParams = opt.modelParams
+dataParams = opt.dataParams  
 
 -- prototype for one time step
 print("Memory Type: "..opt.model)
@@ -295,7 +300,7 @@ end
 pm('   ...done',2)
 
 -- plot network as graph
-if not onNetwork() then  graph.dot(protos.rnn.fg, 'RNNBFF', './graph/RNNBFForwardGraph') end
+if not onNetwork() then  graph.dot(protos.rnn.fg, 'RNNBFF', getRNNTrackerRoot()..'graph/RNNBFForwardGraph') end
 
 ---------------------------------------------------
 ----- now comes data generation ---
@@ -378,9 +383,7 @@ function plotProgress(state, detections, predTracks, predDA, predEx, winID, winT
   local plotTab={}
   local N,F,D=getDataSize(detections:sub(1,maxDets))
   local da = torch.IntTensor(N,F)
-  if colorDetsShuffled then
-    for i=1,maxDets do da[i]=(torch.ones(1,opt.temp_win)*i) end -- color dets shuffled
-  end
+  for i=1,maxDets do da[i]=(torch.ones(1,opt.temp_win)*i) end -- color dets shuffled
   local fullDA = torch.cat(torch.linspace(1,maxTargets,maxTargets):int():reshape(maxTargets,1), DA, 2)
 
   opt.plot_dim=1
@@ -394,6 +397,7 @@ function plotProgress(state, detections, predTracks, predDA, predEx, winID, winT
   plotTab = getTrackPlotTab(predTracks:sub(1,maxTargets):float(), plotTab, 2, nil, predEx, 1) -- update
   plotTab = getTrackPlotTab(predTracks2:sub(1,maxTargets):float(), plotTab, 3, nil, predEx, 1, nil) -- prediction
   plotTab = getExPlotTab(plotTab, predExO, 1)
+
   plot(plotTab, winID, string.format('%s-%06d',winTitle,globiter+itOffset), nil, opt.save_plots) -- do not save first
 
   sleep(.01)
@@ -436,6 +440,144 @@ function getPredAndGTTables(stateUpd, statePred, predDA, predEx, smoothnessEx, s
   end
 
   return input, target
+end
+
+------------------------------------
+---   DO ONE VALIDATION PASS   ---
+------------------------------------
+function eval_val()
+  local tmpOpt=deepcopy(opt) -- turn it off for testing
+  opt.use_gt_input=0
+  if opt.use_da_input==1 then opt.use_da_input = 0 end -- use HA instead of GT for validation
+
+  opt.mini_batch_size = 1
+  miniBatchSize = opt.mini_batch_size
+
+  local sameWinSize = val_temp_win == opt.temp_win
+  if not sameWinSize then
+    opt.temp_win=val_temp_win
+  end
+
+  local tL = tabLen(valTracksTab)
+  local loss = 0
+  local T = opt.temp_win - opt.batch_size
+  --   print(tL)
+  local plotSeq = math.random(tL)
+  TRAINING = false
+  --   TRAINING = true
+  for seq=1,tL do
+    tracks = valTracksTab[seq]:clone()
+    detections = valDetsTab[seq]:clone()
+    labels = valLabTab[seq]:clone()
+    exlabels = valExTab[seq]:clone()
+    detexlabels = valDetExTab[seq]:clone()
+
+    if not sameWinSize then
+      protosrnn = protos.rnn:clone()
+      protoscrit = protos.criterion:clone()
+      protosrnn:evaluate()
+    end
+
+    --     detections, labels = reshuffleDetsAndLabels2(detections, labels)
+    if stateVel then vels = valVelTab[seq]:clone() end
+
+    ----- FORWARD ----
+    local initStateGlobal = clone_list(val_init_state)
+    local rnn_state = {[0] = initStateGlobal}
+    local predictions = {}
+    local predictionsTemp = {}
+
+    local DAinitStateGlobal = clone_list(DAinit_state)
+    local DArnn_state = {[0] = DAinitStateGlobal}
+    local DApredictions = {}
+
+
+    local stateLocs, stateLocs2, stateDA, stateEx = {}, {}, {}, {}
+    local smoothnessEx = {}
+    local smoothnessDyn = {}
+    local statePred = {}
+    local T = opt.temp_win - opt.batch_size
+
+    local allPredDA = torch.zeros(maxTargets*miniBatchSize,T,nClasses)
+    local allPredEx = torch.zeros(maxTargets*miniBatchSize,T,1)
+
+    DAtmpStateEx = torch.ones(maxTargets):float()
+    for t=1,T do
+      --       clones.rnn[t]:evaluate()     -- set flag for dropout
+
+      local rnninp, rnn_state = getRNNInput(t, rnn_state, predictions)    -- get combined RNN input table
+--      abort()
+
+      local lst = {}
+      if not sameWinSize then
+        lst = protosrnn:forward(rnninp)
+        predictions[t] = {}
+        for k,v in pairs(lst) do predictions[t][k] = v:clone() end -- deep copy
+      else
+        clones.rnn[t]:evaluate()      -- set flag for dropout
+        --  print(rnninp)
+        lst = clones.rnn[t]:forward(rnninp) -- do one forward tick
+        predictions[t] = lst
+      end
+
+
+      for i=1,maxTargets*miniBatchSize do allPredDA[{{i},{t},{}}] = globalLAB[i]:clone() end
+
+      predictions = moveState(predictions, t)
+      --       for i=1,maxTargets do allPredEx[i][t][1] = globalEXLAB[i] end
+
+      --       local lst = clones.rnn[t]:forward(rnninp)  -- do one forward tick
+      --       predictions[t] = lst
+
+      -- update hidden state
+      rnn_state[t] = {}
+      for i=1,#init_state do table.insert(rnn_state[t], lst[i]) end -- extract the state, without output
+
+      -- prediction for t (t+1)
+      stateLocs[t], stateLocs2[t], stateDA[t], stateEx[t], smoothnessEx[t], smoothnessDyn[t]  = decode(predictions, t)
+      local input, output = getPredAndGTTables(stateLocs[t], stateLocs2[t], stateDA[t], stateEx[t], smoothnessEx[t], smoothnessDyn[t],t)
+
+      --       print(outLocs, exTar)
+      local tloss = 0
+      if not sameWinSize then
+        tloss = protoscrit:forward(input, output)
+      else
+        tloss = clones.criterion[t]:forward(input, output)
+      end
+      loss = loss + tloss
+    end
+    local predTracks, predTracks2, predDA, predEx = decode(predictions)
+
+    --     local predEx = nil
+
+    -- plotting
+    if seq==plotSeq then
+      --       local _, _, predDA = DAdecode(DApredictions)
+      --       local predDA = getOneHotLabAll(labels, opt.mini_batch_size == 1):sub(1,1,2,opt.temp_win) - 1
+      local predDA = allPredDA:clone()
+      predEx = predEx:sub(1,maxTargets)
+      predDA = predDA:sub(1,maxTargets)
+      --     abort()
+      local predLab = getLabelsFromLL(predDA, false) -- do not resolve with HA
+      predLab = torch.cat(torch.linspace(1,maxTargets,maxTargets):int():reshape(maxTargets,1), predLab, 2)
+
+
+      --       predEx = predEx:sub(1,maxTargets)
+      eval_val_multass = printDA(predDA, predLab, predEx)
+
+--      print('valid')
+      plotProgress(tracks, detections, predTracks, predDA, predEx, 3, 'Validation', predTracks2)
+--      abort()
+      eval_val_mm = getDAError(predDA, labels:sub(1,maxTargets))
+    end
+
+
+  end
+  loss = loss / T / tL  -- make average over all frames
+
+  opt=deepcopy(tmpOpt)
+  miniBatchSize=opt.mini_batch_size
+  return loss
 end
 
 
@@ -528,6 +670,7 @@ function feval()
   local predTracks, predTracks2, predDA, predEx = decode(predictions)
 
   -- plotting
+--  print(globiter)
   if (globiter == 1) or (globiter % opt.plot_every == 0) then
     local predDA = allPredDA:clone()
     predEx = predEx:sub(1,maxTargets)
@@ -539,6 +682,7 @@ function feval()
     feval_multass = printDA(predDA, predLab, predEx)
 
     plotProgress(tracks, detections, predTracks, predDA, predEx, 1, 'Training',predTracks2)
+--    abort()
     feval_mm = getDAError(predDA, labels:sub(1,maxTargets))
   end
 
@@ -689,7 +833,7 @@ for i = 1, opt.max_epochs do
     pm('--------------------------------------------------------')
 
     -- save checkpt
-    local savefile = getCheckptFilename(modelName, opt, modelParams)
+    local savefile = getCheckptFilename(opt.modelName, opt, opt.modelParams)
     saveCheckpoint(savefile, tracks, detections, protos, opt, train_losses, glTimer:time().real, i)
 
 
@@ -712,12 +856,12 @@ for i = 1, opt.max_epochs do
 
     -- plot
     local lossPlotTab = {}
-    table.insert(lossPlotTab, {"Trng loss",plot_loss_x,plot_loss, 'linespoints lt 1'})
-    table.insert(lossPlotTab, {"Vald loss",plot_val_loss_x, plot_val_loss, 'linespoints lt 3'})
-    --       table.insert(lossPlotTab, {"Real loss",plot_real_loss_x, plot_real_loss, 'linespoints lt 5'})
-    table.insert(lossPlotTab, {"Trng MM",plot_train_mm_x, plot_train_mm, 'points lt 1'})
-    table.insert(lossPlotTab, {"Vald MM",plot_val_mm_x, plot_val_mm, 'points lt 3'})
-    --       table.insert(lossPlotTab, {"Real MM",plot_real_mm_x, plot_real_mm, 'points lt 5'})
+    table.insert(lossPlotTab, {"Trng loss",plot_loss_x,plot_loss, 'with linespoints lt 1'})
+    table.insert(lossPlotTab, {"Vald loss",plot_val_loss_x, plot_val_loss, 'with linespoints lt 3'})
+    --       table.insert(lossPlotTab, {"Real loss",plot_real_loss_x, plot_real_loss, 'with linespoints lt 5'})
+    table.insert(lossPlotTab, {"Trng MM",plot_train_mm_x, plot_train_mm, 'with points lt 1'})
+    table.insert(lossPlotTab, {"Vald MM",plot_val_mm_x, plot_val_mm, 'with points lt 3'})
+    --       table.insert(lossPlotTab, {"Real MM",plot_real_mm_x, plot_real_mm, 'with points lt 5'})
 
     --  local minInd = math.min(1,plot_loss:nElement())
     local maxY = math.max(torch.max(plot_loss), torch.max(plot_val_loss), torch.max(plot_real_loss),
@@ -739,7 +883,7 @@ for i = 1, opt.max_epochs do
     local meanmets = torch.zeros(1,14)
     if opt.eval_mot15 ~= 0 then
       local timer = torch.Timer()
-      local trackerScript = 'rnnTrackerBFSEP'
+      local trackerScript = 'rnnTrackerBF'
       --  if stateVel then trackerScript = 'rnnTrackerV' end
       if opt.eval_mot15 < 0 then
         meanmets = runMOT15(trackerScript, modelName, modelSign, valSeqTable)

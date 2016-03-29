@@ -20,14 +20,22 @@ function getDataDir()
 end
 
 --------------------------------------------------------------------------
+--- Get rnntracking ROOT directory (relative)
+function getRNNTrackerRoot()
+  return '../' -- relative to ./src
+end
+
+--------------------------------------------------------------------------
 --- Get directory where results are stored.
 function getResDir(modelName, modelSign)
-  local outDir = 'out'..'/'
+  local rootDir = getRNNTrackerRoot()
+  local outDir = rootDir..'out/'
  
   if modelName ~= nil and modelSign ~= nil then
-    outDir = 'out'..'/'..modelName..'_'..modelSign..'/'
+    outDir = rootDir..'out/'..modelName..'_'..modelSign..'/'
   end
   
   print('Getting results from '..outDir)
   return outDir
 end
+

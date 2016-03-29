@@ -1778,7 +1778,11 @@ end
 -- @param predDA		table containing log-probabilites (typically size N x F-1 x M+1
 -- @param predLab		predicted labels (= max log-prob)
 -- @param predEx		(optional) predicted existance of target
-function printDA(predDA, predLab, predEx)    
+function printDA(predDA, predLab, predEx)
+  local doColor = false
+  -- do we want to color highlight the info/debug output?
+  if opt~=nil and opt.colored_output ~= nil and opt.colored_output~=0 then doColor=true end
+    
   local N,F,D = getDataSize(predDA)
   allMultiAss = 0
   
@@ -1815,8 +1819,14 @@ function printDA(predDA, predLab, predEx)
     print(printline)
   end
   
-  c = sys.COLORS  
-  for t=1,math.min(F,30) do
+  
+  local col = sys.COLORS
+  if not doColor then 
+    col={}
+    col.cyan, col.red, col.white = '','','' 
+  end
+  
+  for t=1,math.min(F,5) do
     print('--------------')
     for i=1,N do      
       local printline = ''
@@ -1825,20 +1835,20 @@ function printDA(predDA, predLab, predEx)
       printline = printline..(string.format('%4d%4d%4d | ',t+1,i,assID))  
        for m=1,maxDets+1 do
 	 local cstr = ''
-	 if m==predLab[i][t+1] then cstr = c.cyan end
-	 printline = printline .. cstr .. (string.format('%7.3f',torch.exp(predDA[i][t][m]))) .. c.white	 
+	 if m==predLab[i][t+1] then cstr = col.cyan end
+	 printline = printline .. cstr .. (string.format('%7.3f',torch.exp(predDA[i][t][m]))) .. col.white	 
 -- 	 if m==maxDets+1 then printline=printline..'\n' end
        end
        if D==maxDets+2 then
 	 local cstr = ''
 	 local m=D
-	 if m==predLab[i][t+1] then cstr = c.cyan end
-	 printline = printline .. cstr .. (string.format('%7.3f',torch.exp(predDA[i][t][m]))) .. c.white	 	 
+	 if m==predLab[i][t+1] then cstr = col.cyan end
+	 printline = printline .. cstr .. (string.format('%7.3f',torch.exp(predDA[i][t][m]))) .. col.white	 	 
        end
        
        if exVar or predEx~=nil then
 	if predEx[i][t][1]>0.5 then 
-	  printline = printline .. c.red .. (string.format('%7.3f',predEx[i][t][1])) .. c.white
+	  printline = printline .. col.red .. (string.format('%7.3f',predEx[i][t][1])) .. col.white
 	else
 	  printline = printline .. (string.format('%7.3f',predEx[i][t][1]))
 	end	
@@ -2231,10 +2241,12 @@ function mkdirP(dir)
   if not lfs.attributes(dir) then lfs.mkdir(dir) end
 end
 
+
 function createAuxDirs()
-  mkdirP('./bin')
-  mkdirP('./tmp')
-  mkdirP('./out')
-  mkdirP('./config')
-  mkdirP('./graph')
+  local rootDir = getRNNTrackerRoot()
+  mkdirP(rootDir..'/bin')
+  mkdirP(rootDir..'/tmp')
+  mkdirP(rootDir..'/out')
+  mkdirP(rootDir..'/config')
+  mkdirP(rootDir..'/graph')
 end
