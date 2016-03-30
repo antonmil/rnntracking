@@ -379,7 +379,7 @@ end
 
 --------------------------------------------------------------------------
 --- Put data association connections
--- TODO
+-- TODO: doc
 function getDAPlotTab(tracks, detections, plotTab, da, predEx, tshift, predDA)
   plotTab = plotTab or {}
   tshift=tshift or 0
@@ -505,23 +505,6 @@ function getExPlotTab(plotTab,predEx, tshift)
   --   abort()
   return plotTab
 end
-
---------------------------------------------------------------------------
---[[ getGTPlotTab
-  adds gt track entries to the plot table
-]]--
--- DEPRECATED Use getTrackPlotTab instead!
--- function getGTPlotTab(tracks, plotTab)
---   plotTab = plotTab or {}
---   for id=1,tracks:size(1) do
---     if torch.sum(tracks:sub(id,id))~=0 then -- only if non-zero track
---       trname = string.format("GT %d",id)
---       ls = string.format("with lines lw 1 linecolor rgbcolor %s",getColorFromID(id))
---       table.insert(plotTab, {trname,(tracks[{{id},{}}]):t(),ls})
---     end
---   end
---   return plotTab
--- end
 
 --------------------------------------------------------------------------
 --- Get a smoothed version of the training loss for plotting

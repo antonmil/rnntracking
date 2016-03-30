@@ -471,11 +471,11 @@ function getRNNInput(t, rnn_state, predictions, statePred, statePredEx)
   
   
   -----  CURRENT   EXISTENCE   E(t)  ----
-  local exlab = {}
-  if t==1 then -- fill all with 1/2 for first frame
-    exlab = torch.ones(miniBatchSize, maxTargets):float() * 0.5 
-  else  -- get previous prediction for subsequent frames
-    _, _, _, exlab=decode(predictions,t-1)
+  local _,exlab = {},{}  
+  if t==1 then 
+    exlab = torch.ones(miniBatchSize, maxTargets):float() * 0.5 -- fill all with 1/2 for first frame 
+  else  
+    _, _, _, exlab=decode(predictions,t-1)        -- get previous prediction for subsequent frames
     exlab=exlab:reshape(miniBatchSize, maxTargets)      
   end
   globalEXLAB = exlab:clone()

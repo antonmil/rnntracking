@@ -2238,7 +2238,10 @@ end
 --- Make directory if does not yet exist
 -- @param dir   path to dir to create
 function mkdirP(dir)
-  if not lfs.attributes(dir) then lfs.mkdir(dir) end
+  if not lfs.attributes(dir) then 
+    lfs.mkdir(dir)
+    pm(string.format('Directory %s created',dir)) 
+  end
 end
 
 
