@@ -47,7 +47,7 @@ cmd:option('-use_KF', 0, 'use kalman filter on DA')
 cmd:option('-fframe', 1, 'start from this frame')
 cmd:option('-ex_thr', 0.5, 'theshold for target existence')
 cmd:option('-exConfThrFinal', 0, 'Final thr. no effect here')
-cmd:option('-da_model','0305DA','model name for Data Association')
+cmd:option('-da_model','LSTM-DA','model name for Data Association')
 -- artificial data options
 cmd:option('-det_noise',0.01,'Detection noise std dev')
 cmd:option('-det_fail',0.1,'Detection failure rate')
@@ -166,17 +166,17 @@ if opt.use_da_input==2 then
   local daRNNfile = getCheckptFilename('testingBFDAONLY', opt, modelParams)
   -- daRNNfile = string.gsub(daRNNfile,'li0','li1') print('WARNING! FORCE LINP') sleep(0.5)
   daRNNfile = string.gsub(daRNNfile,'mt3','mt1') print('WARNING! FORCE LSTM') sleep(0.1)
-  daRNNfile = 'bin/0301DAa-1_mt1_r500_l1_n5_m5_d4_b1_v0_li0.t7'
-  daRNNfile = 'bin/0301DAb-9_mt1_r900_l1_n5_m5_d4_b1_v0_li0.t7'
-  daRNNfile = 'bin/0301DAb-2_mt1_r200_l1_n5_m5_d4_b1_v0_li0.t7'
+  daRNNfile = getRNNTrackerRoot()..'bin/0301DAa-1_mt1_r500_l1_n5_m5_d4_b1_v0_li0.t7'
+  daRNNfile = getRNNTrackerRoot()..'bin/0301DAb-9_mt1_r900_l1_n5_m5_d4_b1_v0_li0.t7'
+  daRNNfile = getRNNTrackerRoot()..'bin/0301DAb-2_mt1_r200_l1_n5_m5_d4_b1_v0_li0.t7'
   -- daRNNfile = 'bin/testingBFDAONLY_mt1_r100_l1_n5_m5_d4_b1_v0_li0_val.t7'
   -- daRNNfile = 'bin/testingBFDAONLY_mt1_r100_l1_n2_m2_d1_b1_v0_li0_val.t7'
-  daRNNfile = 'bin/testingBFDAONLY_mt1_r30_l1_n3_m3_d2_b1_v0_li0_val.t7' -- mlmc
+  daRNNfile = getRNNTrackerRoot()..'bin/testingBFDAONLY_mt1_r30_l1_n3_m3_d2_b1_v0_li0_val.t7' -- mlmc
   -- daRNNfile = 'bin/testingBFDAONLY_mt1_r31_l1_n3_m3_d2_b1_v0_li0_val.t7' -- mse
   -- daRNNfile = 'bin/testingBFDAONLY_mt1_r29_l1_n3_m3_d2_b1_v0_li0_val.t7' -- cnll
 
   local daDim = math.min(opt.state_dim,2)
-  daRNNfile = 'bin/testingBFDAONLY_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d'..daDim..'_b1_v0_li0_val.t7'
+  daRNNfile = getRNNTrackerRoot()..'bin/testingBFDAONLY_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d'..daDim..'_b1_v0_li0_val.t7'
   -- daRNNfile = 'bin/0307DAc-'..opt.max_n..'_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d2_b1_v0_li0_val.t7'
   -- -- -- if sopt.da_model ~= nil then
   -- -- --   local i, t, popen = 0, {}, io.popen
@@ -195,9 +195,9 @@ if opt.use_da_input==2 then
 
   if onNetwork() then
     local parrun = opt.max_n
-    daRNNfile = 'bin/0307DAc-'..parrun..'_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d2_b1_v0_li0_val.t7'
+    daRNNfile = getRNNTrackerRoot()..'bin/0307DAc-'..parrun..'_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d2_b1_v0_li0_val.t7'
     if opt.da_model ~= nil then
-      daRNNfile = 'bin/'..opt.da_model..'c-'..parrun..'_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d2_b1_v0_li0_val.t7'
+      daRNNfile = getRNNTrackerRoot()..'bin/'..opt.da_model..'c-'..parrun..'_mt1_r500_l1_n'..opt.max_n..'_m'..opt.max_m..'_d2_b1_v0_li0_val.t7'
     end
   end
 
@@ -219,9 +219,9 @@ if opt.use_da_input==2 then
   opt.pwd_mode = DAopt.pwd_mode
 
 elseif opt.use_da_input == 3 then
-  daRNNfile='bin/testingHUN_mt1_r150_l1_n5_m5.t7'
+  daRNNfile= getRNNTrackerRoot().. 'bin/testingHUN_mt1_r150_l1_n5_m5.t7'
   if sopt.da_model ~= nil then
-    daRNNfile = 'bin/'..sopt.da_model..'.t7'
+    daRNNfile = getRNNTrackerRoot()..'bin/'..sopt.da_model..'.t7'
   end
 
   ------------------------------
