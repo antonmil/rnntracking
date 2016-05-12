@@ -2,7 +2,7 @@
 --- Prints column names for process table
 function printTrainingHeadline()
   local headline = 
-    string.format("%14s%10s%8s%9s%8s%7s","Iter.","Tr. loss","G-norm","tm/btch","l-rate","ETL")
+    string.format("%14s%10s%8s%9s%8s%6s%6s","Iter.","Tr. loss","G-norm","tm/btch","l-rate","ETL","TELP")
   print(headline)
 end
 
@@ -13,8 +13,10 @@ function printTrainingStats(i, me, tl, gn, t, lr, sec)
   local secLeft = (sec / (i/opt.max_epochs) - sec)
   local hrsLeft = math.floor(secLeft / 3600)
   local minLeft = torch.round((secLeft % 3600)/60)
+  local hrsElapsed = math.floor(sec / 3600)
+  local minElapsed = torch.round((sec % 3600)/60)
   
-  print(string.format("%6d/%7d%10.5f %.1e%8.2fs %.1e%4d:%02d", i, me, tl, gn, t,lr, hrsLeft,minLeft))
+  print(string.format("%6d/%7d%10.5f %.1e%8.2fs %.1e%3d:%02d%3d:%02d", i, me, tl, gn, t,lr, hrsLeft,minLeft,hrsElapsed,minElapsed))
 end
 
 
