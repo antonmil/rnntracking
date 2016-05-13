@@ -30,9 +30,10 @@ in this [arxiv paper](http://arxiv.org)
 
 ## Additional Dependencies
 ### Luarocks
+	sudo apt-get install luarocks
 	luarocks install nn
 	luarocks install nngraph
-	luarocks install lfs
+	luarocks install luafilesystem
 	luarocks install cutorch
 	luarocks install cunn
 
