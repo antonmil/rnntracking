@@ -34,6 +34,7 @@ in this [arxiv paper](http://arxiv.org)
 	luarocks install nn
 	luarocks install nngraph
 	luarocks install luafilesystem
+	luarocks install https://raw.github.com/jucor/torch-distributions/master/distributions-0-0.rockspec
 	luarocks install cutorch
 	luarocks install cunn
 

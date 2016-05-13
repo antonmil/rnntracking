@@ -10,6 +10,8 @@ function getDataDir()
 --     dataDir = '/home/amilan/storage/databases/2DMOT2015/train/'
   elseif lfs.attributes('/home/h3/','mode') then 			-- network
     dataDir = '/home/h3/amilan/storage/databases/2DMOT2015/train/'
+  elseif lfs.attributes('/home/milan/','mode') then 			-- latptop
+    dataDir = '/home/milan/storage/databases/2DMOT2015/train/'
   end
   
   -- make sure directory exists
