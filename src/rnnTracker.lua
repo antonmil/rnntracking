@@ -64,7 +64,6 @@ sopt = cmd:parse(arg)
 -- abort()
 torch.setdefaulttensortype('torch.FloatTensor')
 
-
 torch.manualSeed(sopt.seed)
 
 -- local suffix = ''
@@ -112,6 +111,9 @@ opt.det_false = sopt.det_false
 realData = true
 if sopt.seq_name == 'art' then opt.real_data = 0; realData = false end
 if opt.model==nil then opt.model='lstm' end
+
+-- create some directories if they do not exist
+createAuxDirs()
 
 
 TRAINING = true
@@ -1031,7 +1033,9 @@ table.insert(finalTracksTab, finalTracks)
 
 -- abort()
 -- print(unnormDetsTab)
-finalTracksTab = normalizeData(finalTracksTab, AllunnormDetsTab, true, maxAllTargets, maxAllDets, realSeqNames)
+if realData then
+  finalTracksTab = normalizeData(finalTracksTab, AllunnormDetsTab, true, maxAllTargets, maxAllDets, realSeqNames)
+end
 -- print(finalTracksTab)
 -- local writeResTensor = normalizeData(finalTracks, unnormDet:sub(1,-1,1,-1-opt.batch_size), true)
 local writeResTensor = finalTracksTab[1]
@@ -1061,4 +1065,5 @@ writeResTensor = writeResTensor:sub(1,maxAllTargets)
 
 local outDir = getResDir(sopt.model_name, sopt.model_sign)
 mkdirP(outDir)
+print(outDir)
 writeTXT(writeResTensor, string.format("%s/%s.txt",outDir, seqName))

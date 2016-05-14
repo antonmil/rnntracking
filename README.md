@@ -52,25 +52,25 @@ set the local path in
 
 
 ## Testing
-The code comes with a pre-trained model located in `bin/rnnTrack.t7`. It was trained
+The code comes with a pre-trained model located in `bin/rnnTracker.t7`. It was trained
 on a subset of the [MOTChallenge 2015 training set](https://motchallenge.net/data/2D_MOT_2015/)
 
 Run
-	th rnnTrack.lua
+	th rnnTracker.lua
 to get a sense of the result on synthetic data or
-	th rnnTrack.lua -model_name rnnTrack.t7 -seq_name TUD-Campus
+	th rnnTracker.lua -model_name rnnTracker.t7 -seq_name TUD-Campus
 	
 to produce results on the `TUD-Campus` sequence. The bounding
 boxes are saved in `./out/rnnTrack/TUD-Campus.txt`. Type
-	th rnnTrack.lua -h to get a full list of options
+	th rnnTracker.lua -h to get a full list of options
 	
 
 
 ## Training
 
-	th train.lua -config config/detault.txt
+	th trainBF.lua -config ../config/default.txt
 will start training a model on the `TUD-Campus` sequence. Type
-	th train.lua -h
+	th trainBF.lua -h
 
 to see the full set of options. You may define the training parameters
 in a separate text file, similar to `config/default.txt` and pass it
