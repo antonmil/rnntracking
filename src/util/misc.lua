@@ -1445,6 +1445,16 @@ function zeroTensor1(a)
   end 
 end
 
+function zeroTensor2(a,b)
+  if opt.gpuid >= 0 and opt.opencl == 0 then
+    return torch.CudaTensor(a,b)
+  elseif opt.gpuid < 0 and opt.opencl == 1 then
+    return torch.zeros(a,b):cl()
+  else
+    return torch.zeros(a,b):float()
+  end 
+end
+
 function zeroTensor3(a,b,c)
   if opt.gpuid >= 0 and opt.opencl == 0 then
     return torch.CudaTensor(a,b,c)

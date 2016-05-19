@@ -355,11 +355,13 @@ function getRNNInput(t, rnn_state, predictions, statePred, statePredEx)
       local useDet = locdet[{{},{t}}]:clone():reshape(miniBatchSize*maxDets, stateDim)
       local trueDet = detexlabels[{{},{t}}]:eq(1):expand(miniBatchSize*maxDets, stateDim)
 
-      useDet = useDet:cmul(trueDet:float())
+      -- useDet = useDet:cmul(trueDet:float())
+      useDet = useDet:cmul(dataToGPU(trueDet:float()))
       stateLocs = useDet:clone()
       -- TODO. Make more efficient through :index(...)
       if miniBatchSize>1 then
-        stateLocs = torch.zeros(1,xSize):float()
+        --stateLocs = torch.zeros(1,xSize):float()
+        stateLocs = zeroTensor2(1,xSize)
 
         for mb = 1,opt.mini_batch_size do
           local mbStart = opt.max_n * (mb-1)+1
@@ -466,6 +468,7 @@ function getRNNInput(t, rnn_state, predictions, statePred, statePredEx)
   -- ... and next data association L(t+1)
   globalLAB = lab:clone()
   lab=lab:reshape(miniBatchSize, maxTargets*nClasses)
+  lab = dataToGPU(lab)
   table.insert(rnninp, lab)  
   
   
@@ -479,6 +482,7 @@ function getRNNInput(t, rnn_state, predictions, statePred, statePredEx)
     exlab=exlab:reshape(miniBatchSize, maxTargets)      
   end
   globalEXLAB = exlab:clone()
+  exlab = dataToGPU(exlab)
   table.insert(rnninp, exlab)  
    
 
