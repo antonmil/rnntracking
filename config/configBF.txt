@@ -3,7 +3,7 @@
            num_layers  1
                 max_n  1
                 max_m  1
-            state_dim  1
+            state_dim  4
            batch_size  1
             loss_type  1
                   vel  0

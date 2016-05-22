@@ -36,7 +36,7 @@ cmd:text('Train a simple trajectory model')
 cmd:text()
 cmd:text('Options')
 -- model params
-cmd:option('-config', '', 'config file')
+cmd:option('-config', './config/configBF.txt', 'config file')
 cmd:option('-rnn_size', 100, 'size of RNN internal state')
 cmd:option('-num_layers',1,'number of layers in the RNN / LSTM')
 cmd:option('-model_index',3,'1=lstm, 2=gru, 3=rnn')
@@ -272,6 +272,11 @@ end
 init_state = getInitState(opt, miniBatchSize)
 val_init_state = getInitState(opt, 1)
 DAinit_state = getDAInitState(opt, miniBatchSize)
+
+
+-- ship the model to the GPU if desired
+for k,v in pairs(protos) do v = dataToGPU(v) end
+
 -- put the above things into one flattened parameters tensor
 params, grad_params = model_utils.combine_all_parameters(protos.rnn)
 
@@ -438,6 +443,8 @@ function getPredAndGTTables(stateUpd, statePred, predDA, predEx, smoothnessEx, s
     table.insert(input, smoothnessEx)
     table.insert(target, torch.zeros(maxTargets*miniBatchSize):float())
   end
+  
+  for k,v in pairs(target) do target[k] = dataToGPU(v) end
 
   return input, target
 end
