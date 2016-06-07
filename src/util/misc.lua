@@ -88,12 +88,23 @@ end
 -- @param seqName	The name of the sequence.
 function getGT(seqName)
   local datafile = getDataDir() .. seqName .. "/gt/gt.txt"
+  local gt = 0
+  local gtAvailable = 1
   if lfs.attributes(datafile) then 
 --     print("GT file ".. datafile)
+    gt = readTXT(datafile, 1) -- param #2 = GT
   else
-    error("Error: GT file ".. datafile .." does not exist")
+--     error("Error: GT file ".. datafile .." does not exist")
+    pm("WARNING: GT file ".. datafile .." does not exist",1)
+    -- default zero GT
+    gt = {}
+    for t=1,sopt.length do
+      local ttab = {[1] = torch.zeros(1,opt.state_dim)}
+      table.insert(gt, ttab) 
+    end
+    gtAvailable = 0
   end
-  return readTXT(datafile, 1) -- param #2 = GT
+  return gt, gtAvailable
 end
 
 --------------------------------------------------------------------------
@@ -117,8 +128,10 @@ function getGTTracks(seqName)
   ts = ts or 1 	-- default starting frame
   local nDim = 4		-- number of dimensions
   
-  local gt = getGT(seqName)	-- get raw GT table
-  
+  local gt, gtAvailable = getGT(seqName)	-- get raw GT table
+  if gtAvailable == 0 then
+    return torch.zeros(1, sopt.length, opt.state_dim) + 0.1
+  end
  
   local imgWidth = 1
 --   F = math.min(tabLen(gt)-ts+1,F)
