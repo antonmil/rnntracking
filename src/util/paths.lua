@@ -24,7 +24,8 @@ end
 --------------------------------------------------------------------------
 --- Get rnntracking ROOT directory (relative)
 function getRNNTrackerRoot()
-  return '../' -- relative to ./src
+--  return '../' -- relative to ./src
+  return lfs.currentdir()
 end
 
 --------------------------------------------------------------------------

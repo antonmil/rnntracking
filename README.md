@@ -9,34 +9,34 @@ in this [arxiv paper](http://arxiv.org)
 
 # Dependencies
 ## Required
-	* Lua
-	* Torch
-	* luarocks: nn, nngraph, lfs
-	
-## Optional	
-	* cunn, cutorch (optional for GPU usage)
-	* Matlab (visualization and metric computation only)
+    * Lua
+    * Torch
+    * luarocks: nn, nngraph, lfs
+    
+## Optional    
+    * cunn, cutorch (optional for GPU usage)
+    * Matlab (visualization and metric computation only)
 
-	
+    
 # Installation
 ## Torch
-	# Follow these instructions to install Torch: http://torch.ch/docs/getting-started.html
+    # Follow these instructions to install Torch: http://torch.ch/docs/getting-started.html
 
-	# in a terminal, run the commands
-	curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash
-	git clone https://github.com/torch/distro.git ~/torch --recursive
-	cd ~/torch; ./install.sh
+    # in a terminal, run the commands
+    curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash
+    git clone https://github.com/torch/distro.git ~/torch --recursive
+    cd ~/torch; ./install.sh
 
 
 ## Additional Dependencies
 ### Luarocks
-	sudo apt-get install luarocks
-	luarocks install nn
-	luarocks install nngraph
-	luarocks install luafilesystem
-	luarocks install https://raw.github.com/jucor/torch-distributions/master/distributions-0-0.rockspec
-	luarocks install cutorch
-	luarocks install cunn
+    sudo apt-get install luarocks
+    luarocks install nn
+    luarocks install nngraph
+    luarocks install luafilesystem
+    luarocks install https://raw.github.com/jucor/torch-distributions/master/distributions-0-0.rockspec
+    luarocks install cutorch
+    luarocks install cunn
 
 ### MOTChallenge
 The current version uses the training set of the
@@ -44,9 +44,9 @@ The current version uses the training set of the
 
 You should download the dataset from [here](https://motchallenge.net/data/2D_MOT_2015/) and
 set the local path in
-	src/util/paths.lua
+    src/util/paths.lua
 
-	
+    
 
 # Usage
 
@@ -56,21 +56,21 @@ The code comes with a pre-trained model located in `bin/rnnTracker.t7`. It was t
 on a subset of the [MOTChallenge 2015 training set](https://motchallenge.net/data/2D_MOT_2015/)
 
 Run
-	th rnnTracker.lua
+    th rnnTracker.lua
 to get a sense of the result on synthetic data or
-	th rnnTracker.lua -model_name rnnTracker.t7 -seq_name TUD-Campus
-	
+    th rnnTracker.lua -model_name rnnTracker -seq_name TUD-Campus
+    
 to produce results on the `TUD-Campus` sequence. The bounding
 boxes are saved in `./out/rnnTrack/TUD-Campus.txt`. Type
-	th rnnTracker.lua -h to get a full list of options
-	
+    th rnnTracker.lua -h to get a full list of options
+    
 
 
 ## Training
 
-	th trainBF.lua -config ../config/default.txt
+    th trainBF.lua -config ../config/default.txt
 will start training a model on the `TUD-Campus` sequence. Type
-	th trainBF.lua -h
+    th trainBF.lua -h
 
 to see the full set of options. You may define the training parameters
 in a separate text file, similar to `config/default.txt` and pass it
@@ -103,6 +103,14 @@ I.e. each entry in a table is then a MB*N x F x D tensor, where MB is the mini-b
 # Documentation
 The code is documented following the luadoc convention. To generate
 html docs, install luadoc `luarocks install luadoc` and run `./docify.sh`.
+
+# Known issues
+## Data Association
+The code for training data association is not included yet. We are working on releasing it soon.
+
+## Training data
+For now, only method 2 from the paper is used for generating training data synthetically by learning simple generative trajectory models from annotated data.
+
 
 
 # Acknowledgements and remarks

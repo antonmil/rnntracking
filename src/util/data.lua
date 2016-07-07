@@ -1,3 +1,8 @@
+--[[
+This file contains functions for data handling.
+Loading, generating, preparing train and test data
+--]]
+
 -------------------------------------------------------------------------
 --- load / generate and pre-process data
 function prepareData(mode, sequences, trainingSequences, singleBatch)

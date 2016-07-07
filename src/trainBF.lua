@@ -6,7 +6,7 @@
 --
 -- This file implements training of a Bayesian filter (BF)
 --
--- @author Anton Milan (anton.milan@adelaide.edu.au)
+-- @author Anton Milan <anton.milan@adelaide.edu.au>
 --
 -- This code is based on A. Karpathy's character-level
 -- RNN https://github.com/karpathy/char-rnn
