@@ -518,7 +518,7 @@ end
 
 
 
--- printAll(tTracksTab[1], tDetsTab[1], tLabTab[1])
+-- printAll(trTracksTab[1], trDetsTab[1], trLabTab[1])
 -- printAll(realTracksTab[1], realDetsTab[1], realLabTab[1])
 -- abort()
 print('Training batches:   '..tabLen(trTracksTab))
@@ -720,6 +720,8 @@ function getGTDA(t)
   --   DA = DA:reshape(miniBatchSize*maxTargets,nClasses)
 
   DA = dataToGPU(DA)
+--  print(labels)
+--  abort()
 
   if opt.profiler ~= 0 then  profUpdate(debug.getinfo(1,"n").name, loctimer:time().real) end
   return DA

@@ -226,8 +226,8 @@ function prepareData(mode, sequences, trainingSequences, singleBatch)
 
     --     abort('here')    
   end
-  --   printAll(TracksTab[1], DetsTab[1], LabTab[1], ExTab[1], DetExTab[1]); 
-  --   abort('here')
+--     printAll(TracksTab[1], DetsTab[1], LabTab[1], ExTab[1], DetExTab[1]); 
+--     abort('here')
   -- REMOVE DETECTIONS OF INEXISTING TRACKS
   if not hamidData then
     DetsTab = removeInexistantDetections(DetsTab, ExTab, LabTab)
@@ -680,8 +680,9 @@ function getRealData(nSynth, mbSize, trSeqTable)
   local correctDets = opt.real_dets~=0
   local sD = opt.state_dim
   stateDim, opt.state_dim = 4,4
+  local cropFrames = false
   local fulltrTracksTab, fulltrDetsTab, _ = 
-    getTracksAndDetsTables(trSeqTable, maxTargets, maxDets, false, correctDets)
+    getTracksAndDetsTables(trSeqTable, maxTargets, maxDets, cropFrames, correctDets)
 
 
   for k,v in pairs(fulltrTracksTab) do fulltrTracksTab[k]=cleanDataTensor(fulltrTracksTab[k]) end
@@ -1327,8 +1328,9 @@ function getTracksAndDetsTables(seqTable, maxTargets, maxDets, cropFrames, corre
     local ex = torch.IntTensor(maxTargets, opt.temp_win):fill(1)
     --     print(tracks)
     for i=1,Ngt do
-      --       print(tracks)
-      --       print(opt.temp_win)
+--             print(tracks)
+--             print(opt.temp_win)
+--             print(tracks[{{i},{},{1}}]:size())
       local trNotExist = tracks[{{i},{},{1}}]:reshape(opt.temp_win):eq(0)
       ex[i][trNotExist] = 0
       labels[i][trNotExist] = maxDets+1

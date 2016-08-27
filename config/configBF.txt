@@ -48,7 +48,7 @@
             eval_conf  config/XPOS.ini
 	    
              profiler  0
-            real_data  0
+            real_data  1
             real_dets  0
           trim_tracks  1
             grad_clip  1
