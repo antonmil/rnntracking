@@ -1,8 +1,24 @@
-# Multi-Target Tracking with Recurrent Neural Networks
+# Online Multi-Target Tracking with Recurrent Neural Networks
 
-This code can be used to train RNNs to perform **online data
-association** for multiple target tracking. The model is described
-in this [arxiv paper](http://arxiv.org)
+This code accomponies the following paper: [(pdf)](http://www.milanton.de/files/aaai2017/aaai2017-anton-rnntracking.pdf)
+
+
+    Online Multi-target Tracking Using Recurrent Neural Networks
+    A. Milan, S. H. Rezatofighi, A. Dick, I. Reid, K. Schindler. In: AAAI 2017
+    
+bibtex:
+```
+@inproceedings{Milan:2017:AAAI_RNNTracking,
+	title = {Online Multi-Target Tracking using Recurrent Neural Networks},
+	booktitle = {AAAI},
+	author = {Milan, A. and Rezatofighi, S. H. and Dick, A. and Reid, I. and Schindler, K.},
+	month = {February},
+	year = {2017}
+}
+```
+    
+
+The model is described in this [arxiv paper](http://arxiv.org)
 
 
 *The code is still under development.*
