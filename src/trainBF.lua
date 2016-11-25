@@ -41,22 +41,15 @@ cmd:option('-rnn_size', 100, 'size of RNN internal state')
 cmd:option('-num_layers',1,'number of layers in the RNN / LSTM')
 cmd:option('-model_index',3,'1=lstm, 2=gru, 3=rnn')
 cmd:option('-temp_win',10, 'temporal window history')
---cmd:option('-batch_size',1,'number of frames to consider (1=online)')
 cmd:option('-max_n',1,'Max number of targets per frame')
 cmd:option('-max_m',1,'Max number of measurements per frame')
 cmd:option('-state_dim',1,'state dimension (1-4)')
---cmd:option('-loss_type',1,'1 = loss(x,gt), 0 = loss(x, det)')
 cmd:option('-order_dets',1,'order detections (HA) before feeding')
 cmd:option('-kappa',5,'gt loss weighting')
 cmd:option('-lambda',5,'pred loss weighting')
 cmd:option('-mu',1,'label loss weighting')
 cmd:option('-nu',1,'ex loss weighting')
 cmd:option('-xi',1,'smoothness termination')
---cmd:option('-omicron',1,'dynamic smoothness')
---cmd:option('-vel',0,'include velocity into state')
---cmd:option('-linp',1,'use labels inputs')
---cmd:option('-einp',0,'use labels inputs')
---cmd:option('-one_hot',1,'use one hot encoding')
 -- optimization
 cmd:option('-lrng_rate',1e-2,'learning rate')
 cmd:option('-lrng_rate_decay',0.99,'learning rate decay')
@@ -76,10 +69,10 @@ cmd:option('-full_set', 1, 'use full (or reduced [0]) training / val set')
 cmd:option('-random_epoch', 0, 'random training data each epoch')
 -- data related
 cmd:option('-synth_training',100,'number of synthetic scenes to augment training data with')
-cmd:option('-pert_training',0,'number of perturbed scenes to augment training data with')
+-- cmd:option('-pert_training',0,'number of perturbed scenes to augment training data with')
 cmd:option('-synth_valid',10,'number of synthetic scenes to augment validation data with')
-cmd:option('-real_data', 0, 'use (1) or don\'t use (0) real data for validation')
-cmd:option('-real_dets', 0, 'use (1) or don\'t use (0) real detections')
+cmd:option('-real_data', 0, 'use real data for validation?')
+cmd:option('-real_dets', 0, 'use real detections?')
 cmd:option('-det_noise', 0.0, 'Synthetic detections noise level')
 cmd:option('-det_fail', 0.0, 'Synthetic detections failure rate')
 cmd:option('-det_false', 0.0, 'Synthetic detections false alarm rate')
@@ -346,8 +339,11 @@ miniBatchSize = opt.mini_batch_size
 print('Training batches:   '..tabLen(trTracksTab))
 print('Validation batches: '..tabLen(valTracksTab))
 
+-- print(trTracksTab)
+-- print(valTracksTab)
 --print(trSeqNames)
---showData(trTracksTab, trDetsTab, trSeqNames)
+-- showData(trTracksTab, trDetsTab, trSeqNames)
+
 -------------------------------------------------------------------------
 
 --------------------------------------------------------------------------
@@ -400,8 +396,8 @@ function plotProgress(state, detections, predTracks, predDA, predEx, winID, winT
   plotTab = getDAPlotTab(predTracks:sub(1,maxTargets):float(), detections:sub(1,maxDets):float(), plotTab, fullDA, predEx,0,predDA)
 
   plotTab = getTrackPlotTab(predTracks:sub(1,maxTargets):float(), plotTab, 2, nil, predEx, 1) -- update
-  plotTab = getTrackPlotTab(predTracks2:sub(1,maxTargets):float(), plotTab, 3, nil, predEx, 1, nil) -- prediction
-  plotTab = getExPlotTab(plotTab, predExO, 1)
+--   plotTab = getTrackPlotTab(predTracks2:sub(1,maxTargets):float(), plotTab, 3, nil, predEx, 1, nil) -- prediction
+--   plotTab = getExPlotTab(plotTab, predExO, 1) -- existence
 
   plot(plotTab, winID, string.format('%s-%06d',winTitle,globiter+itOffset), nil, opt.save_plots) -- do not save first
 

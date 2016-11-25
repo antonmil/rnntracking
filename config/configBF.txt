@@ -17,14 +17,14 @@
         training_file  
            max_epochs  50000
       mini_batch_size  10
-       synth_training  200
+       synth_training  20
           synth_valid  10
              full_set  1
 
         pert_training  0
            save_plots  0
             det_noise  0.01
-             det_fail  0.3
+             det_fail  0.0
             det_false  0.0
              norm_std  -1
             norm_mean  1
@@ -39,7 +39,7 @@
        
           print_every  10
        eval_val_every  100
-           plot_every  100
+           plot_every  10
               dropout  0.02
              temp_win  10
            suppress_x  0

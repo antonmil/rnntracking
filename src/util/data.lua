@@ -105,8 +105,8 @@ function prepareData(mode, sequences, trainingSequences, singleBatch)
 
   -- FLAG ALL DETECTIONS THAT REALLY EXIST
   for k,v in pairs(DetsTab) do    
-    DetExTab[k] = torch.zeros(maxDets*miniBatchSize, opt.temp_win):int()
-    local detEx = v:narrow(3,1,1):reshape(maxDets*miniBatchSize,opt.temp_win):ne(0)
+    DetExTab[k] = torch.zeros(maxDets*opt.mini_batch_size, opt.temp_win):int()
+    local detEx = v:narrow(3,1,1):reshape(maxDets*opt.mini_batch_size,opt.temp_win):ne(0)
     DetExTab[k][detEx] = 1
   end  
   --   printAll(TracksTab[1], DetsTab[1], LabTab[1], ExTab[1], DetExTab[1])
@@ -274,7 +274,7 @@ function prepareData(mode, sequences, trainingSequences, singleBatch)
   -- repair broken labels (not existang = missed detection)
   if not hamidData then
     for k,v in pairs(TracksTab) do
-      for i=1,maxTargets*miniBatchSize do
+      for i=1,maxTargets*opt.mini_batch_size do
         --       print('mb='..k..'.  sample='..i)
 
         local trNotExist = ExTab[k][{{i},{}}]:eq(0)
@@ -416,7 +416,7 @@ function getHamidData(nSamples, dataDir, opt)
     local allex = torch.Tensor(1,opt.temp_win):int()    
     local allseqnames = {}
 
-    for m=1,miniBatchSize do
+    for m=1,opt.mini_batch_size do
       cnt=cnt+1
       if cnt>nFiles then cnt=1 end
 
@@ -709,7 +709,7 @@ function getRealData(nSynth, mbSize, trSeqTable)
     local alllab = torch.IntTensor(1, opt.temp_win):fill(opt.max_n)
     local allseqnames = {}
 
-    for m=1,miniBatchSize do
+    for m=1,opt.mini_batch_size do
       local tL = tabLen(fulltrTracksTab)
       local randSeq = math.random(tL)	-- pick a random sequence from training set
       --       print('a',n,m)
@@ -1328,9 +1328,9 @@ function getTracksAndDetsTables(seqTable, maxTargets, maxDets, cropFrames, corre
     local ex = torch.IntTensor(maxTargets, opt.temp_win):fill(1)
     --     print(tracks)
     for i=1,Ngt do
---             print(tracks)
---             print(opt.temp_win)
---             print(tracks[{{i},{},{1}}]:size())
+            print(tracks)
+            print(opt.temp_win)
+            print(tracks[{{i},{},{1}}]:size())
       local trNotExist = tracks[{{i},{},{1}}]:reshape(opt.temp_win):eq(0)
       ex[i][trNotExist] = 0
       labels[i][trNotExist] = maxDets+1
@@ -1644,14 +1644,14 @@ function normalizeData(dataTab, detTab, backwards, n, m, seqNamesTab, singleBatc
 
   if normImSize then assert(#dataTab == #seqNamesTab, 'tables are different lengths') end
 
-  --   local miniBatchSize = dataTab[1]:size(1)/n
-  local miniBatchSize=opt.mini_batch_size
-  if singleBatch then miniBatchSize = 1 end
-  --   if perBatch then miniBatchSize = opt.mini_batch_size end
+  --   local opt.mini_batch_size = dataTab[1]:size(1)/n
+--   local opt.mini_batch_size=opt.mini_batch_size
+  if singleBatch then opt.mini_batch_size = 1 end
+  --   if perBatch then opt.mini_batch_size = opt.mini_batch_size end
   for k,v in pairs(dataTab) do
     shiftTab[k] = {}
     divTab[k] = {}
-    for mb = 1,miniBatchSize do
+    for mb = 1,opt.mini_batch_size do
       shiftTab[k][mb] = {}
       divTab[k][mb] = {}
 

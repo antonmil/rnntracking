@@ -8,8 +8,11 @@ require 'gnuplot'
 -- @param rawStr 	gnu setup to be used (Optional)
 -- @param save		Flag to save as PNG in addition
 function plot(data, winID, winTitle, rawStr, save)
-  if not isValidPlotData(data) then return false end	-- to avoid error with empty or invalid data
-
+  if not isValidPlotData(data) then 
+      print("Invalid plot data. Unable to plot.")
+      return false 
+  end	-- to avoid error with empty or invalid data
+  
   winID = winID or 1
   winTitle = winTitle or "unnamed"
   rawStr = rawStr or {}
@@ -21,9 +24,11 @@ function plot(data, winID, winTitle, rawStr, save)
   if type(rawStr) ~= 'table' then return end  --  GNU Plot commands must be passed in a table
 
   local enhancedString = ''
+  local gpterm = 'wxt'
+--   local gpterm = 'x11'
   local enhancedString = 'enhanced dashed "arial,16"'
-  gnuplot.raw(string.format('set term wxt %s %d', enhancedString, winID))
-  gnuplot.raw(string.format('set term wxt title "%s"',winTitle))
+  gnuplot.raw(string.format('set term %s %s %d',gpterm, enhancedString, winID))
+  gnuplot.raw(string.format('set term %s title "%s"',gpterm,winTitle))
 
   local yr = 8   -- yrange and yrange shift
 
@@ -155,7 +160,7 @@ function getTrackPlotTab(tracks, plotTab, ptype, xvalues, ex, tshift, DA, predSt
     if type(ex)=='table' then
 
       nEx = tabLen(ex)
-      exTensor = torch.ones(N,nEx) -- NxF tensor with 1,2 existance classes
+      exTensor = torch.ones(N,nEx) -- NxF tensor with 1,2 existence classes
       for t,_ in pairs(ex) do
         mv,mi = torch.max(ex[t],2)
         exTensor[{{},{t}}] = mi
@@ -163,7 +168,7 @@ function getTrackPlotTab(tracks, plotTab, ptype, xvalues, ex, tshift, DA, predSt
     else -- ex is an NxFx2 tensor
       --     print(ex)
       --     abort()
-      exTensor = torch.ones(N,F) -- NxF tensor with 1,2 existance classes
+      exTensor = torch.ones(N,F) -- NxF tensor with 1,2 existence classes
       for i=1,N do
       -- 	mv,mi = torch.max(ex[i],2)
       -- 	exTensor[{{i},{}}] = mi
@@ -378,7 +383,7 @@ function getDetectionsPlotTab(detections, plotTab, thr, da,tshift,vdet)
 end
 
 --------------------------------------------------------------------------
---- Put data association connections
+--- Put data association connections as vertical lines
 -- TODO: doc
 function getDAPlotTab(tracks, detections, plotTab, da, predEx, tshift, predDA)
   plotTab = plotTab or {}
@@ -486,7 +491,7 @@ function getDAPlotTab(tracks, detections, plotTab, da, predEx, tshift, predDA)
   return plotTab
 end
 
---- Plot existance probabilities
+--- Plot existence probabilities
 function getExPlotTab(plotTab,predEx, tshift)
   tshift=tshift or 0
 
@@ -499,10 +504,6 @@ function getExPlotTab(plotTab,predEx, tshift)
     table.insert(plotTab, {trname, exFrames, probs, ls})
 
   end
-  --   abort()
-
-  --   print(plotTab[49])
-  --   abort()
   return plotTab
 end
 

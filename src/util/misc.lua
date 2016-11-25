@@ -771,9 +771,10 @@ end
 function xAvailable()
   if lfs.attributes('/home/h3/','mode') then return false end	-- network
   
-  local f = io.popen('pidof X')
-  local t = f:read()
-  f:close()
+--   local f = io.popen('pidof X')
+--   local t = f:read()
+--   f:close()
+  t=true --?
   
   local s = true
   if opt.suppress_x ~= nil and opt.suppress_x > 0 then s = false end

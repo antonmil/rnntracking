@@ -16,12 +16,11 @@ bibtex:
 	year = {2017}
 }
 ```
-    
+  
 
-The model is described in this [arxiv paper](http://arxiv.org)
+An extended version of the paper can be found on [arxiv](http://arxiv.org)
 
 
-*The code is still under development.*
 
 # Dependencies
 ## Required
@@ -84,12 +83,12 @@ boxes are saved in `./out/rnnTrack/TUD-Campus.txt`. Type
 
 ## Training
 
-    th trainBF.lua -config ../config/default.txt
+    th trainBF.lua -config ../config/configBF.txt
 will start training a model on the `TUD-Campus` sequence. Type
     th trainBF.lua -h
 
 to see the full set of options. You may define the training parameters
-in a separate text file, similar to `config/default.txt` and pass it
+in a separate text file, similar to `config/configBF.txt` and pass it
 as the `-config` option to the training script.
 
 ## Data
@@ -125,7 +124,7 @@ html docs, install luadoc `luarocks install luadoc` and run `./docify.sh`.
 The code for training data association is not included yet. We are working on releasing it soon.
 
 ## Training data
-For now, only method 2 from the paper is used for generating training data synthetically by learning simple generative trajectory models from annotated data.
+Training data is generated synthetically by learning simple generative trajectory models from annotated data.
 
 
 
