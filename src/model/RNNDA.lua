@@ -1,6 +1,5 @@
 --[[ 
-  A RNN that emulates a Bayesian Filter
-
+  An RNN for predicting data association
 ]]--
 
 require 'model.ticks'

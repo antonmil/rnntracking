@@ -1,6 +1,6 @@
 # Online Multi-Target Tracking with Recurrent Neural Networks
 
-This code accomponies the following paper: [(pdf)](http://www.milanton.de/files/aaai2017/aaai2017-anton-rnntracking.pdf)
+This code accompanies the following paper: [(pdf)](http://www.milanton.de/files/aaai2017/aaai2017-anton-rnntracking.pdf)
 
 
     Online Multi-target Tracking Using Recurrent Neural Networks
@@ -16,10 +16,6 @@ bibtex:
 	year = {2017}
 }
 ```
-  
-
-An extended version of the paper can be found on [arxiv](http://arxiv.org)
-
 
 
 # Dependencies
@@ -79,7 +75,8 @@ to produce results on the `TUD-Campus` sequence. The bounding
 boxes are saved in `./out/rnnTrack/TUD-Campus.txt`. Type
     th rnnTracker.lua -h to get a full list of options
     
-
+This example uses Hungarian data association.
+    
 
 ## Training
 
@@ -90,6 +87,8 @@ will start training a model on the `TUD-Campus` sequence. Type
 to see the full set of options. You may define the training parameters
 in a separate text file, similar to `config/configBF.txt` and pass it
 as the `-config` option to the training script.
+
+
 
 ## Data
 Training expects annotated image sequences. The annotation format is a CSV text file
@@ -124,7 +123,7 @@ html docs, install luadoc `luarocks install luadoc` and run `./docify.sh`.
 The code for training data association is not included yet. We are working on releasing it soon.
 
 ## Training data
-Training data is generated synthetically by learning simple generative trajectory models from annotated data.
+Training data is generated synthetically by learning simple generative trajectory models from annotated data. Training with real data is not supported.
 
 
 

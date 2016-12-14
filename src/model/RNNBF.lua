@@ -1,5 +1,5 @@
 --[[
-  A RNN that emulates a Bayesian Filter
+  An RNN that emulates a Bayesian Filter
 
 ]]--
 

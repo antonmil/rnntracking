@@ -11,7 +11,7 @@ function readTXT(datafile, mode)
   local gtraw = csvRead(datafile)
   local data={}
   local confThr = -1e5
-  if opt.detConfThr ~= nil then confThr = opt.detConfThr end
+  if opt~= nil and opt.detConfThr ~= nil then confThr = opt.detConfThr end
   if sopt~=nil and sopt.detConfThr ~= nil then confThr = sopt.detConfThr end
 --   print(confThr)
     

@@ -647,7 +647,7 @@ function getGTDet(t, labels)
 end
 
 
-
+-- get ground truth data assoication
 function getGTDA(t)
   local loctimer=torch.Timer()
 
@@ -1008,20 +1008,20 @@ function getPredAndGTTables(predState, predState2, predDA, predDAsum, predDAsum2
     local GTLocs = getGTState(t)
   end
 
-  if updLoss then
+--   if updLoss then
 
 
     --     local detPred = getPredDet(t, predDA)
     --     local detPred = getGTDet(t, labels)
-    table.insert(input, predState)	-- predicted (updated) state
-    table.insert(output, GTLocs)	-- detection at predicted DA
-  end
+--     table.insert(input, predState)	-- predicted (updated) state
+--     table.insert(output, GTLocs)	-- detection at predicted DA
+--   end
 
 
 
   --     print(output)
 
-  if predLoss then
+--   if predLoss then
     --       local GTLocs = getGTState(t)
 
 
@@ -1030,11 +1030,11 @@ function getPredAndGTTables(predState, predState2, predDA, predDAsum, predDAsum2
     --       local ll = getLabelsFromLL(predDA:reshape(maxTargets*miniBatchSize,1,maxDets))
     --       labFromPred[{{},{t+1}}] = ll
     --       local detGT = getGTDet(t, labFromPred)
-    table.insert(input, predState2)
+--     table.insert(input, predState2)
     --       print(detPred)
     --       abort()
-    table.insert(output, GTLocs)
-  end
+--     table.insert(output, GTLocs)
+--   end
 
   if daLoss then
     local GTDA = getGTDA(t)
