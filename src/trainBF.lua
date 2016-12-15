@@ -1,8 +1,8 @@
 ------------------------------------------------------
--- Online Data Association using RNNs
+-- Online Multi-Target Tracking using RNNs
 --
--- A. Milan, S. H. Rezatofighi, K. Schindler, A. Dick, I. Reid
--- arxiv 2016
+--     Online Multi-Target Tracking Using Recurrent Neural Networks
+--     A. Milan, S. H. Rezatofighi, A. Dick, I. Reid, K. Schindler. In: AAAI 2017
 --
 -- This file implements training of a Bayesian filter (BF)
 --

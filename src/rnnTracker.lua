@@ -1,3 +1,7 @@
+--     Online Multi-Target Tracking Using Recurrent Neural Networks
+--     A. Milan, S. H. Rezatofighi, A. Dick, I. Reid, K. Schindler. In: AAAI 2017
+
+
 require 'torch'
 require 'nn'
 require 'nngraph'
@@ -30,7 +34,7 @@ cmd:option('-pred', 0, '0=learned, 1=GT')
 cmd:option('-maxProb', 0, '0=raw probability, 1=max for each target')
 cmd:option('-resHA',0 , 'resolve identities with HA')
 cmd:option('-fixTracks',1 , 'show fixed tracks')
-cmd:option('-showEx',1 , 'show existence')
+cmd:option('-showEx',0 , 'show existence')
 -- further options
 cmd:option('-profiler',0,'profiler on/off')
 cmd:option('-verbose',2,'Verbosity level')
@@ -994,18 +998,7 @@ plot(plotTab,1,'Final Result - '..seqName)
 
 
 -- plot second dimension
--- if opt.state_dim>1 then
---   sopt.plot_dim = 2
---   plotTab = {}
---   plotTab = getTrackPlotTab(ztracks, plotTab, 1)  -- ground truth
---   plotTab = getDetectionsPlotTab(realDets, plotTab, nil, da)
---   plotTab = getDAPlotTab(finalTracks, detections, plotTab, predLab, predEx, 0, predDA)
---   plotTab = getTrackPlotTab(finalTracks, plotTab, 2,nil, predEx, 1)
---   plotTab = getTrackPlotTab(finalTracks2, plotTab, 3,nil, predEx, 1)
---   plotTab = getExPlotTab(plotTab, predEx, 1)
---   -- -- --------------------
---   plot(plotTab,2,'Final Result - Dim 2 - '..seqName)
--- end
+
 
 --- Set inex. to 0
 local N,F,D = getDataSize(finalTracks)
@@ -1029,20 +1022,14 @@ end
 local origFinalTracks = finalTracks:clone() -- normalized
 finalTracksTab={}
 table.insert(finalTracksTab, finalTracks)
--- table.insert(finalTracksTab, fixedTracks)
 
--- abort()
--- print(unnormDetsTab)
 if realData then
   finalTracksTab = normalizeData(finalTracksTab, AllunnormDetsTab, true, maxAllTargets, maxAllDets, realSeqNames)
 end
--- print(finalTracksTab)
--- local writeResTensor = normalizeData(finalTracks, unnormDet:sub(1,-1,1,-1-opt.batch_size), true)
 local writeResTensor = finalTracksTab[1]
--- print(writeResTensor)
 
 
--- move result forward in time
+-- move result forward in time if necessary
 if sopt.fframe ~= nil and sopt.fframe>1 then
   local N,F,D = getDataSize(writeResTensor)
   local prePad = torch.zeros(N,sopt.fframe-1,D)
@@ -1052,16 +1039,10 @@ end
 
 -- smash existence probability as dim = 5
 writeResTensor = writeResTensor:cat(predEx, 3)
--- print(predEx)
--- print(writeResTensor)
 
--- abort()
---
 -- remove false tracks
--- printDim(writeResTensor)
 writeResTensor = writeResTensor:sub(1,maxAllTargets)
--- printDim(writeResTensor)
--- abort()
+
 
 local outDir = getResDir(sopt.model_name, sopt.model_sign)
 mkdirP(outDir)

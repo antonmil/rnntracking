@@ -1,7 +1,8 @@
 ------------------------------------------------------
 -- Online Data Association using RNNs
--- A. Milan, S. H. Rezatofighi, K. Schinlder, I. Reid
--- arxiv 2015
+--     Online Multi-Target Tracking Using Recurrent Neural Networks
+--     A. Milan, S. H. Rezatofighi, A. Dick, I. Reid, K. Schindler. In: AAAI 2017
+
 --
 -- @author Anton Milan (anton.milan@adelaide.edu.au)
 --

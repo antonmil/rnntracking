@@ -76,6 +76,10 @@ boxes are saved in `./out/rnnTrack/TUD-Campus.txt`. Type
     th rnnTracker.lua -h to get a full list of options
     
 This example uses Hungarian data association.
+
+## Visualization
+To see the visual results you can run
+    th visBoxes.lua -file ../out/rnnTracker_r300_l1_n1_m1_d4/TUD-Campus.txt
     
 
 ## Training
