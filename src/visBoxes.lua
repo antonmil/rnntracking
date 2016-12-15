@@ -13,16 +13,16 @@ cmd:text('Options')
 -- model path
 cmd:option('-seqName','TUD-Campus','Sequence Name')
 -- options
-cmd:option('-file','gt','gt, det, res, or result-file-name')
+cmd:option('-file','gt','gt, det, or result-file-name')
 cmd:option('-length',0,'how many frames to show (0=full sequence)')
 
 cmd:text()
 -- parse input params
 visopt = cmd:parse(arg)
 
-seqName = visopt.seqName
+local seqName = visopt.seqName
 local imgHeight, imgWidth = getImgRes(seqName)
-imgWidth = 1
+imgWidth = 1 -- no need for scaling
 
 if string.lower(visopt.file) == "res" then
   visopt.file = string.format("out/%s.txt",seqName)
@@ -34,37 +34,36 @@ elseif string.lower(visopt.file) == "det" then
   error("Det vis not implemented")
 else
   res = readTXT(visopt.file, 1)
-  F = tabLen(res)
+  F = tabLen(res) -- how many frames
   print(F..' frames read')
+  if visopt.length~=0 and visopt.length<F then
+    F=visopt.length
+    print('Trimmed to '..F..' frames');
+  end
+  
+  -- find maxID
+  local minN, maxN = 1000,-1000
+  for t=1,F do
+    for k in pairs(res[t]) do 
+      if k<minN then minN=k end
+      if k>maxN then maxN=k end
+    end
+  end
+  print(string.format("min ID: %d. max ID: %d\n",minN, maxN))
+  
   local nDim=4
   
-  -- which tracks (IDs) are in first frame
-  local orderedKeys = {}
-  for k in pairs(res[1]) do table.insert(orderedKeys, k) end
-  table.sort(orderedKeys)
-  
-  local N = tabLen(orderedKeys)		-- number of tracks
+
+  -- allocate tracks tensor
+  local N = maxN		-- number of tracks
   tracks = torch.ones(N, F, nDim):fill(0)
   
   -- Now create a FxN tensor with states
   for t=1,F do
-    local cnt=0
-    for i = 1, N do
-	cnt=cnt+1
-	local gtID, gtBBox = orderedKeys[i], res[t][ orderedKeys[i] ]
-	if gtBBox then 
-	  for dim = 1,nDim do
--- 	    tracks[cnt][t] = getFoot(gtBBox)[1][1] / imgWidth 	    
-	    tracks[cnt][t][dim]=gtBBox[1][dim] 	-- normalize to [0,1]
-	  end
-	end
+    for k,v in pairs(res[t]) do
+      tracks[k][t]=v
     end
   end  
---   tracks = tracks * imgWidth
-end
-
-if visopt.length > 0 and visopt.length < tracks:size(2) then
-  tracks = tracks:sub(1,-1,1,visopt.length)
 end
 
 local N,F = getDataSize(tracks)
@@ -104,7 +103,6 @@ end
 
 -- now run through sequence
 for t=1,F do
-  print(t)
     winIDstr = string.format("set term wxt %d reset",1)
     gnuplot.raw(winIDstr)
   imFile = getDataDir() .. seqName .. string.format("/img1/%06d.jpg",t)
@@ -114,7 +112,7 @@ for t=1,F do
   gnuplot.raw('unset key; unset tics;')
 --   end
   for i=1,N do
-    print(tracks[i][t])
+--     print(tracks[i][t])
     box = getGnuplotBox(tracks[i][t], imgHeight)
 --     if box[1]>0 then    
     
@@ -127,6 +125,6 @@ for t=1,F do
     
   end  
 --   print(t)
-  sleep(.04) -- prevent crashing hack
+  sleep(.1) -- slow down and prevent crashing hack
   gnuplot.plotflush()
 end

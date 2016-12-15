@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------
 --- Reads a txt file format from MOTChallenge 2015 (frame, id, bbx,...).
 -- @param datafile - path to data file
--- @param mode (optional)  1 = ground truth, 2 = detections
+-- @param mode (optional)  1 = ground truth / result, 2 = detections
 -- @return state  - a table with bounding boxes
 -- @return data[t][id] can be used to access one specific box
 -- @see writeTXT
@@ -18,7 +18,7 @@ function readTXT(datafile, mode)
   
   
   if not mode then
-	-- figure out whether we are in GT (1) or in Det (2) mode
+	-- figure out whether we are in GT/Result (1) or in Det (2) mode
 	mode = 1
 	if gtraw[1][7] ~= -1 then mode = 2 end -- very simple, gt do not have scores
   end
@@ -37,7 +37,7 @@ function readTXT(datafile, mode)
     -- detections do not have IDs, simply increment
     if mode==2 then id = table.getn(data[fr]) + 1 end
     
-    -- only use box for ground truth, and box + confidence for detections
+    -- only use box for ground truth / result, and box + confidence for detections
     if mode == 1 then
       table.insert(data[fr],id,torch.Tensor({bx,by,bw,bh}):resize(1,4)) 
     elseif mode == 2 and sc > confThr then      
