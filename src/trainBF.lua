@@ -111,6 +111,8 @@ opt = cmd:parse(arg)
 -- overwrite params with config if given
 if string.len(opt.config) > 0 then opt = parseConfig(opt.config, opt) end
 
+ggtime = torch.Timer() -- start global timer
+
 -- create auxiliary directories (or make sure they exist)
 createAuxDirs()
 
@@ -1016,5 +1018,4 @@ for i = 1, opt.max_epochs do
 
 end
 
-print(string.format('%20s%10.2f%7s','total time meas.',mtime,''))
 print(string.format('%20s%10.2f%7s','total time',ggtime:time().real,''))
